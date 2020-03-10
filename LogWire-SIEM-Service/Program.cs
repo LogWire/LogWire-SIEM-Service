@@ -30,7 +30,10 @@ namespace LogWire.SIEM.Service
                     {
                         config.AddEnvironmentVariables("lw_");
                         config.AddControllerConfiguration(endpoint, "api", token);
+                        config.AddControllerConfiguration(endpoint, "rabbitmq", token);
                     });
+
+                    webBuilder.UseUrls("https://0.0.0.0:5002");
 
                     webBuilder.UseStartup<Startup>();
                 });

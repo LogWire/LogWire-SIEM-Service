@@ -10,16 +10,16 @@ namespace LogWire.SIEM.Service.Services.API
     public class SIEMServiceServer : SIEMService.SIEMServiceBase
     {
 
-        private readonly IDataRepository<SIEMUserEntry> _repository;
+        private readonly IDataRepository<UserEntry> _repository;
 
-        public SIEMServiceServer(IDataRepository<SIEMUserEntry> repository)
+        public SIEMServiceServer(IDataRepository<UserEntry> repository)
         {
             _repository = repository;
         }
 
         public override Task<UserListResponse> GetUserList(UserListMessage request, ServerCallContext context)
         {
-            var repo = _repository as SIEMUserRepository;
+            var repo = _repository as UserRepository;
 
             var result = repo.GetPagedList(request.ResultsPerPage, request.PageNumber);
 
@@ -43,7 +43,7 @@ namespace LogWire.SIEM.Service.Services.API
         {
             Guid id = Guid.NewGuid();
 
-            _repository.Add(new SIEMUserEntry
+            _repository.Add(new UserEntry
             {
                 Id = id,
                 Username = request.Username

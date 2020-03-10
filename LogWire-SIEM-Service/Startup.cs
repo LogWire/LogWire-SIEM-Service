@@ -3,6 +3,7 @@ using LogWire.SIEM.Service.Data.Model;
 using LogWire.SIEM.Service.Data.Repository;
 using LogWire.SIEM.Service.Middleware;
 using LogWire.SIEM.Service.Services.API;
+using LogWire.SIEM.Service.Services.Hosted;
 using LogWire.SIEM.Service.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,9 +30,14 @@ namespace LogWire.SIEM.Service
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<SIEMDataContext>(opt => opt.UseMySql("server=localhost;port=3306;database=lw_siem;uid=lwuser;password=lwpassword"));
+            services.AddDbContext<DataContext>(opt => opt.UseMySql("server=localhost;port=3306;database=lw_siem;uid=lwuser;password=lwpassword"));
 
-            services.AddScoped<IDataRepository<SIEMUserEntry>, SIEMUserRepository>();
+            services.AddScoped<IDataRepository<UserEntry>, UserRepository>();
+            services.AddScoped<IDataRepository<MachineEntry>, MachineRepository>();
+            services.AddScoped<IDataRepository<AuthEventEntry>, AuthEventRepository>();
+
+            services.AddSingleton<AgentQueueService>();
+            services.AddSingleton<IHostedService, AgentQueueService>(serviceProvider => serviceProvider.GetService<AgentQueueService>());
 
             services.AddGrpc();
         }
@@ -39,6 +45,7 @@ namespace LogWire.SIEM.Service
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
